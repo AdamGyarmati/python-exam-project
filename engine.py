@@ -68,7 +68,17 @@ class Engine:
             self.gameboard.display_sprites()
 
             if not self.gameboard.is_running:
-                pygame.quit()
+                self.gameboard.draw_end_screen()  # End screen megjelenítése
+                self.wait_for_quit()
+
+    def wait_for_quit(self):
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_r:
+                    self.start_game()  # Új játék indítása
+                    return
 
     def game_object_die_process(self, mouse_pos):
         for game_object in self.gameboard.get_game_objects_sprites():

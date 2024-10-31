@@ -7,6 +7,7 @@ from utils.utils import (
     BLACK_COLOR,
     FONT_SIZE,
     GREEN_COLOR,
+    WHITE_COLOR,
     HOVER_GREEN_COLOR,
 )
 from game_objects.game_object import GameObject
@@ -50,6 +51,13 @@ class GameBoard:
         self.screen.blit(start_text, start_rect)
         pygame.display.flip()
         return start_rect
+
+    def draw_end_screen(self):
+        self.screen.fill((0, 0, 0))  # Fekete háttér a vég képernyőhöz
+        end_text = self.font.render(f"Game Over! Score: {int(self.score_board.score)}", True, WHITE_COLOR)  # Fehér szöveg
+        text_rect = end_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+        self.screen.blit(end_text, text_rect)
+        pygame.display.flip()  # Frissítjük a képernyőt
 
     def update_screen(self):
         self.screen.blit(self.background, (0, 0))
