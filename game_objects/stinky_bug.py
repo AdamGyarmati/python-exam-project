@@ -11,6 +11,7 @@ class StinkyBug(GameObject):
             if self.position == GameObjectMovement.DOWN or self.position == GameObjectMovement.RIGHT
             else random.choice([-5, -6, -7, -8, -9])
         )
+        self.sound.set_volume(0.3)
 
     def update(self):
         if self.position == GameObjectMovement.DOWN or self.position == GameObjectMovement.UP:

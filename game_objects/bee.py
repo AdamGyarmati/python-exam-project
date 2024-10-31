@@ -13,7 +13,9 @@ class Bee(GameObject):
             else random.choice([-1, -2, -3, -4, -5])
         )
         self.background_sound = pygame.mixer.Sound(BEE_BACKGROUND_SOUND)
+        self.background_sound.set_volume(2)
         self.background_sound_playing = False
+        self.sound.set_volume(0.3)
         self.wave_offset = 0
 
     def update(self):

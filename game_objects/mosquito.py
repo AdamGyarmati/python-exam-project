@@ -11,6 +11,7 @@ class Mosquito(GameObject):
             if self.position == GameObjectMovement.DOWN or self.position == GameObjectMovement.RIGHT
             else random.choice([-1, -2, -3, -4, -5])
         )
+        self.sound.set_volume(0.1)
 
     def update(self):
         if self.position == GameObjectMovement.DOWN or self.position == GameObjectMovement.UP:

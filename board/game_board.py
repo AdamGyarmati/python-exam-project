@@ -33,6 +33,7 @@ class GameBoard:
         self._game_objects_sprites = pygame.sprite.Group()
         self.score_board = ScoreBoard()
         self.sound = pygame.mixer.Sound(GAMEBOARD_SOUND)
+        self.sound.set_volume(0.2)
         self.sound.play()
         self.font = pygame.font.Font(None, size=FONT_SIZE)
 
@@ -50,7 +51,7 @@ class GameBoard:
         start_rect = start_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         self.screen.blit(start_text, start_rect)
         pygame.display.flip()
-        return start_rect
+        return button_rect
 
     def draw_end_screen(self):
         self.screen.fill((0, 0, 0))  # Fekete háttér a vég képernyőhöz
