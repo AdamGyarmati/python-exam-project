@@ -9,6 +9,23 @@ class Engine:
     def __init__(self, gameboard: GameBoard):
         self.gameboard = gameboard
 
+    def start_game(self):
+        game_started = False
+        while True:
+            if not game_started:
+                start_button_rect = self.gameboard.draw_start_screen(pygame.mouse.get_pos())
+
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                        if start_button_rect.collidepoint(event.pos):
+                            game_started = True  # Játék elindítása
+
+            else:
+                self.run()  # Játék főciklus
+                break
+
     def run(self):
         start_ticks = pygame.time.get_ticks()
         last_spawn_mosquito_time = pygame.time.get_ticks()
@@ -59,7 +76,6 @@ class Engine:
                 game_object.is_alive = False
                 game_object.play_sound()
                 self.gameboard.remove_game_object(game_object)
-                game_object
                 if isinstance(game_object, Mosquito):
                     self.gameboard.score_board.increment_score()
                 elif isinstance(game_object, Bee):

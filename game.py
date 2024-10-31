@@ -4,4 +4,4 @@ from engine import Engine
 
 gameboard = GameBoard("Mosquito splasher")
 engine = Engine(gameboard)
-engine.run()
+engine.start_game()

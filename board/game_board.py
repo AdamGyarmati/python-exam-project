@@ -1,6 +1,14 @@
 import pygame
-from utils.utils import SCREEN_WIDTH, SCREEN_HEIGHT, GAMEBOARD_BACKGROUND, GAMEBOARD_SOUND
-from game_objects.mosquito import Mosquito
+from utils.utils import (
+    SCREEN_WIDTH,
+    SCREEN_HEIGHT,
+    GAMEBOARD_BACKGROUND,
+    GAMEBOARD_SOUND,
+    BLACK_COLOR,
+    FONT_SIZE,
+    GREEN_COLOR,
+    HOVER_GREEN_COLOR,
+)
 from game_objects.game_object import GameObject
 from board.score_board import ScoreBoard
 
@@ -25,6 +33,23 @@ class GameBoard:
         self.score_board = ScoreBoard()
         self.sound = pygame.mixer.Sound(GAMEBOARD_SOUND)
         self.sound.play()
+        self.font = pygame.font.Font(None, size=FONT_SIZE)
+
+    def draw_start_screen(self, mouse_pos):
+        button_rect = pygame.Rect(SCREEN_WIDTH // 2 - 125, SCREEN_HEIGHT // 2 - 42, 250, 80)
+
+        if button_rect.collidepoint(mouse_pos):
+            current_button_color = HOVER_GREEN_COLOR
+        else:
+            current_button_color = GREEN_COLOR
+
+        self.screen.blit(self.background, (0, 0))
+        pygame.draw.rect(self.screen, current_button_color, button_rect, border_radius=15)
+        start_text = self.font.render("Start Game", True, BLACK_COLOR)
+        start_rect = start_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+        self.screen.blit(start_text, start_rect)
+        pygame.display.flip()
+        return start_rect
 
     def update_screen(self):
         self.screen.blit(self.background, (0, 0))
