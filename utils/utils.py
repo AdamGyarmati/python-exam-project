@@ -25,6 +25,10 @@ STINKY_BUG_IMAGE = "./Assets/bogar.png"
 STINKY_BUG_SOUND = "./Assets/nice.mp3"
 PLUS_SECOND_FOR_STINKY_BUG = 15
 
+# HAND
+HAND_SIZE = 100
+HAND_IMAGE = "./Assets/hand.png"
+
 # SCORE BOARD
 TIMER_DURATION = 60
 FONT_SIZE = 50

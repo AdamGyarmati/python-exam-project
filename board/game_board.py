@@ -12,6 +12,7 @@ from utils.utils import (
 )
 from game_objects.game_object import GameObject
 from board.score_board import ScoreBoard
+from media_pipe_hand_tracking.hand import Hand
 
 
 class GameBoard:
@@ -36,6 +37,7 @@ class GameBoard:
         self.sound.set_volume(0.2)
         self.sound.play()
         self.font = pygame.font.Font(None, size=FONT_SIZE)
+        self.hand = Hand()
 
     def draw_start_screen(self, mouse_pos):
         button_rect = pygame.Rect(SCREEN_WIDTH // 2 - 125, SCREEN_HEIGHT // 2 - 42, 250, 80)
@@ -76,6 +78,7 @@ class GameBoard:
 
     def draw_sprites(self):
         self._game_objects_sprites.draw(self.screen)
+        self.screen.blit(self.hand.image, self.hand.rect)
 
     def display_sprites(self):
         pygame.display.flip()

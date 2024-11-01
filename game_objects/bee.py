@@ -9,7 +9,7 @@ class Bee(GameObject):
         super().__init__(BEE_IMAGE, BEE_MIN_SIZE, BEE_MAX_SIZE, BEE_SOUND)
         self.speed = (
             abs(random.choice([-1, -2, -3, -4, -5]))
-            if self.position == GameObjectMovement.DOWN or self.position == GameObjectMovement.RIGHT
+            if self.direction == GameObjectMovement.DOWN or self.direction == GameObjectMovement.RIGHT
             else random.choice([-1, -2, -3, -4, -5])
         )
         self.background_sound = pygame.mixer.Sound(BEE_BACKGROUND_SOUND)
@@ -19,7 +19,7 @@ class Bee(GameObject):
         self.wave_offset = 0
 
     def update(self):
-        if self.position == GameObjectMovement.DOWN or self.position == GameObjectMovement.UP:
+        if self.direction == GameObjectMovement.DOWN or self.direction == GameObjectMovement.UP:
             self.rect.y += self.speed
             self.wave_offset += 0.1
             self.rect.x += int(10 * math.sin(self.wave_offset))

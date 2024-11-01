@@ -39,6 +39,8 @@ class Engine:
                     case pygame.MOUSEBUTTONDOWN:
                         self.game_object_die_process(pygame.mouse.get_pos())
 
+            self.game_object_die_hand_process()
+
             # Ellenőrizzük, hogy eltelt-e 500 ms ( .5 másodperc) az utolsó moszkító létrehozása óta
             current_time = pygame.time.get_ticks()
             if current_time - last_spawn_mosquito_time > 800:  # 500 ms = 0.5 másodperc
@@ -57,6 +59,8 @@ class Engine:
 
             # Screen update
             self.gameboard.update_screen()
+
+            self.gameboard.hand.update()
 
             # Sprite Frissítés
             self.gameboard.update_sprites()
@@ -80,9 +84,11 @@ class Engine:
                     self.start_game()  # Új játék indítása
                     return
 
-    def game_object_die_process(self, mouse_pos):
+    def game_object_die_click_process(self, mouse_pos=(-1000, -1000)):
         for game_object in self.gameboard.get_game_objects_sprites():
-            if game_object.rect.collidepoint(mouse_pos) and game_object.is_alive:
+            if (game_object.rect.collidepoint(mouse_pos) and game_object.is_alive) or (
+                game_object.is_alive and self.gameboard.hand.rect.colliderect(game_object.rect)
+            ):
                 game_object.is_alive = False
                 game_object.play_sound()
                 self.gameboard.remove_game_object(game_object)
@@ -94,3 +100,24 @@ class Engine:
                     self.gameboard.score_board.decrement_remaining_time()
                 elif isinstance(game_object, StinkyBug):
                     self.gameboard.score_board.increment_remaining_time()
+
+    def game_object_die_hand_process(self):
+        overlap_threshold = 2000  # Átfedés küszöbértéke, amelyet beállíthatsz
+        for game_object in self.gameboard.get_game_objects_sprites():
+            if game_object.is_alive and self.gameboard.hand.rect.colliderect(game_object.rect):
+                overlap_rect = self.gameboard.hand.rect.clip(game_object.rect)
+                overlap_area = overlap_rect.width * overlap_rect.height  # Átfedés területe
+
+                if overlap_area >= overlap_threshold and self.gameboard.hand.is_closed():  # Ellenőrizzük az átfedés területét
+                    game_object.is_alive = False
+                    game_object.play_sound()
+                    self.gameboard.remove_game_object(game_object)
+                    if isinstance(game_object, Mosquito):
+                        self.gameboard.score_board.increment_score()
+                    elif isinstance(game_object, Bee):
+                        game_object.background_sound.stop()
+                        self.gameboard.score_board.decrement_score()
+                        self.gameboard.score_board.decrement_remaining_time()
+                    elif isinstance(game_object, StinkyBug):
+                        self.gameboard.score_board.increment_remaining_time()
+                    game_object = None

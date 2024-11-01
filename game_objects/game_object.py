@@ -11,7 +11,7 @@ class GameObject(ABC, pygame.sprite.Sprite):
         image = pygame.image.load(img_url).convert_alpha()
         self.width_and_height = random.randint(object_min_size, object_max_size)
         self.image = pygame.transform.scale(image, (self.width_and_height, self.width_and_height))
-        self.position = random.choice([GameObjectMovement.DOWN, GameObjectMovement.LEFT, GameObjectMovement.RIGHT, GameObjectMovement.UP])
+        self.direction = random.choice([GameObjectMovement.DOWN, GameObjectMovement.LEFT, GameObjectMovement.RIGHT, GameObjectMovement.UP])
         self.is_alive = True
         self.sound = pygame.mixer.Sound(sound)
         self.background_sound = None
@@ -26,7 +26,7 @@ class GameObject(ABC, pygame.sprite.Sprite):
             self.sound.play()
 
     def _init_rect(self):
-        match self.position:
+        match self.direction:
             case GameObjectMovement.DOWN:
                 self.rect = self.image.get_rect(center=(random.randint(self.width_and_height, SCREEN_WIDTH - self.width_and_height), -50))
             case GameObjectMovement.LEFT:
