@@ -7,117 +7,149 @@ from game_objects.stinky_bug import StinkyBug
 
 class Engine:
     def __init__(self, gameboard: GameBoard):
-        self.gameboard = gameboard
+        self._gameboard = gameboard
+        self._last_spawn_mosquito_time = pygame.time.get_ticks()
+        self._last_spawn_bee_time = pygame.time.get_ticks()
+        self._last_spawn_stinky_bug_time = pygame.time.get_ticks()
+        self._start_ticks = pygame.time.get_ticks()
 
     def start_game(self):
-        game_started = False
+        mouse_game = False
+        hand_game = False
         while True:
-            if not game_started:
-                start_button_rect = self.gameboard.draw_start_screen(pygame.mouse.get_pos())
+            if not mouse_game and not hand_game:
+                start_button_mouse_rect, start_button_hand_rect = self._gameboard.draw_start_screen(pygame.mouse.get_pos())
 
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         pygame.quit()
                     elif event.type == pygame.MOUSEBUTTONDOWN:
-                        if start_button_rect.collidepoint(event.pos):
-                            game_started = True  # Játék elindítása
+                        if start_button_mouse_rect.collidepoint(event.pos):
+                            mouse_game = True  # Játék elindítása
+                        elif start_button_hand_rect.collidepoint(event.pos):
+                            hand_game = True  # Játék elindítása
 
-            else:
-                self.run()  # Játék főciklus
+            elif mouse_game:
+                self.run_mouse()
+                break
+            elif hand_game:
+                self.run_hand()
                 break
 
-    def run(self):
-        start_ticks = pygame.time.get_ticks()
-        last_spawn_mosquito_time = pygame.time.get_ticks()
-        last_spawn_bee_time = pygame.time.get_ticks()
-        last_spawn_stinky_bug_time = pygame.time.get_ticks()
-        while self.gameboard.is_running:
+    def run_mouse(self):
+        while self._gameboard.is_running:
             for event in pygame.event.get():
                 match event.type:
                     case pygame.QUIT:
-                        self.gameboard.is_running = False
+                        self._gameboard.is_running = False
                     case pygame.MOUSEBUTTONDOWN:
-                        self.game_object_die_process(pygame.mouse.get_pos())
+                        self.game_object_die_click_process(pygame.mouse.get_pos())
 
+            self.process_game_step()
+
+            if not self._gameboard.is_running:
+                self._gameboard.draw_end_screen()  # End screen megjelenítése
+                self.wait_for_quit()
+
+    def run_hand(self):
+        while self._gameboard.is_running:
+            for event in pygame.event.get():
+                match event.type:
+                    case pygame.QUIT:
+                        self._gameboard.is_running = False
+
+            self.process_game_step(is_hand=True)
+
+            if not self._gameboard.is_running:
+                self._gameboard.draw_end_screen()
+                self.wait_for_quit()
+
+    def process_game_step(self, is_hand=False):
+        if is_hand:
             self.game_object_die_hand_process()
 
-            # Ellenőrizzük, hogy eltelt-e 500 ms ( .5 másodperc) az utolsó moszkító létrehozása óta
-            current_time = pygame.time.get_ticks()
-            if current_time - last_spawn_mosquito_time > 800:  # 500 ms = 0.5 másodperc
-                self.gameboard.add_game_object(Mosquito())  # Új moszkító létrehozása
-                last_spawn_mosquito_time = current_time  # Frissítsd az utolsó létrehozás időpontját
+        self.generate_game_objects(
+            pygame.time.get_ticks(),
+            self._last_spawn_mosquito_time,
+            self._last_spawn_bee_time,
+            self._last_spawn_stinky_bug_time,
+        )
 
-            if current_time - last_spawn_bee_time > 8000:  # 8000 ms = 8 másodperc
-                self.gameboard.add_game_object(Bee())  # Új bee létrehozása
-                last_spawn_bee_time = current_time  # Frissítsd az utolsó létrehozás időpontját
+        self._gameboard.check_score_board_timer_up(self._start_ticks)
 
-            if current_time - last_spawn_stinky_bug_time > 10000:  # 10000 ms = 10 másodperc
-                self.gameboard.add_game_object(StinkyBug())  # Új bee létrehozása
-                last_spawn_stinky_bug_time = current_time  # Frissítsd az utolsó létrehozás időpontját
+        # Screen update
+        self._gameboard.update_screen()
 
-            self.gameboard.check_score_board_timer_up(start_ticks)
+        if is_hand:
+            self._gameboard.hand.update()
 
-            # Screen update
-            self.gameboard.update_screen()
+        # Sprite Frissítés
+        self._gameboard.update_sprites()
 
-            self.gameboard.hand.update()
+        # Sprite Rajzolás
+        self._gameboard.draw_sprites()
 
-            # Sprite Frissítés
-            self.gameboard.update_sprites()
+        if is_hand:
+            self._gameboard.draw_hand()
 
-            # Sprite Rajzolás
-            self.gameboard.draw_sprites()
+        # Sprite megjelenítés
+        self._gameboard.display_sprites()
 
-            # Sprite megjelenítés
-            self.gameboard.display_sprites()
+    def generate_game_objects(self, current_time, last_spawn_mosquito_time, last_spawn_bee_time, last_spawn_stinky_bug_time):
+        if current_time - last_spawn_mosquito_time > 800:  # 800 ms = 0.8 másodperc
+            self._gameboard.add_game_object(Mosquito())  # Új moszkító létrehozása
+            self._last_spawn_mosquito_time = current_time
 
-            if not self.gameboard.is_running:
-                self.gameboard.draw_end_screen()  # End screen megjelenítése
-                self.wait_for_quit()
+        if current_time - last_spawn_bee_time > 8000:  # 8000 ms = 8 másodperc
+            self._gameboard.add_game_object(Bee())  # Új bee létrehozása
+            self._last_spawn_bee_time = current_time
+
+        if current_time - last_spawn_stinky_bug_time > 10000:  # 10000 ms = 10 másodperc
+            self._gameboard.add_game_object(StinkyBug())  # Új bee létrehozása
+            self._last_spawn_stinky_bug_time = current_time
 
     def wait_for_quit(self):
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                elif event.type == pygame.KEYDOWN and event.key == pygame.K_r:
-                    self.start_game()  # Új játék indítása
-                    return
+                    break
+            else:
+                continue
+            break
 
     def game_object_die_click_process(self, mouse_pos=(-1000, -1000)):
-        for game_object in self.gameboard.get_game_objects_sprites():
-            if (game_object.rect.collidepoint(mouse_pos) and game_object.is_alive) or (
-                game_object.is_alive and self.gameboard.hand.rect.colliderect(game_object.rect)
-            ):
+        for game_object in self._gameboard.get_game_objects_sprites():
+            if game_object.rect.collidepoint(mouse_pos) and game_object.is_alive:
                 game_object.is_alive = False
                 game_object.play_sound()
-                self.gameboard.remove_game_object(game_object)
+                self._gameboard.remove_game_object(game_object)
                 if isinstance(game_object, Mosquito):
-                    self.gameboard.score_board.increment_score()
+                    self._gameboard.score_board.increment_score()
                 elif isinstance(game_object, Bee):
                     game_object.background_sound.stop()
-                    self.gameboard.score_board.decrement_score()
-                    self.gameboard.score_board.decrement_remaining_time()
+                    self._gameboard.score_board.decrement_score()
+                    self._gameboard.score_board.decrement_remaining_time()
                 elif isinstance(game_object, StinkyBug):
-                    self.gameboard.score_board.increment_remaining_time()
+                    self._gameboard.score_board.increment_remaining_time()
 
     def game_object_die_hand_process(self):
-        overlap_threshold = 2000  # Átfedés küszöbértéke, amelyet beállíthatsz
-        for game_object in self.gameboard.get_game_objects_sprites():
-            if game_object.is_alive and self.gameboard.hand.rect.colliderect(game_object.rect):
-                overlap_rect = self.gameboard.hand.rect.clip(game_object.rect)
+        overlap_threshold = 1000  # Átfedés küszöbértéke, amelyet beállíthatsz
+        for game_object in self._gameboard.get_game_objects_sprites():
+            if game_object.is_alive and self._gameboard.hand.rect.colliderect(game_object.rect):
+                overlap_rect = self._gameboard.hand.rect.clip(game_object.rect)
                 overlap_area = overlap_rect.width * overlap_rect.height  # Átfedés területe
 
-                if overlap_area >= overlap_threshold and self.gameboard.hand.is_closed():  # Ellenőrizzük az átfedés területét
+                if overlap_area >= overlap_threshold and self._gameboard.hand.is_closed():  # Ellenőrizzük az átfedés területét
                     game_object.is_alive = False
                     game_object.play_sound()
-                    self.gameboard.remove_game_object(game_object)
+                    self._gameboard.remove_game_object(game_object)
                     if isinstance(game_object, Mosquito):
-                        self.gameboard.score_board.increment_score()
+                        self._gameboard.score_board.increment_score()
                     elif isinstance(game_object, Bee):
                         game_object.background_sound.stop()
-                        self.gameboard.score_board.decrement_score()
-                        self.gameboard.score_board.decrement_remaining_time()
+                        self._gameboard.score_board.decrement_score()
+                        self._gameboard.score_board.decrement_remaining_time()
                     elif isinstance(game_object, StinkyBug):
-                        self.gameboard.score_board.increment_remaining_time()
+                        self._gameboard.score_board.increment_remaining_time()
                     game_object = None

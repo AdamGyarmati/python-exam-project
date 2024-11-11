@@ -9,12 +9,12 @@ class GameObject(ABC, pygame.sprite.Sprite):
     def __init__(self, img_url: str, object_min_size, object_max_size, sound=None) -> None:
         super().__init__()
         image = pygame.image.load(img_url).convert_alpha()
-        self.width_and_height = random.randint(object_min_size, object_max_size)
-        self.image = pygame.transform.scale(image, (self.width_and_height, self.width_and_height))
-        self.direction = random.choice([GameObjectMovement.DOWN, GameObjectMovement.LEFT, GameObjectMovement.RIGHT, GameObjectMovement.UP])
+        self._width_and_height = random.randint(object_min_size, object_max_size)
+        self.image = pygame.transform.scale(image, (self._width_and_height, self._width_and_height))
+        self._direction = random.choice([GameObjectMovement.DOWN, GameObjectMovement.LEFT, GameObjectMovement.RIGHT, GameObjectMovement.UP])
         self.is_alive = True
-        self.sound = pygame.mixer.Sound(sound)
-        self.background_sound = None
+        self._sound = pygame.mixer.Sound(sound)
+        self._background_sound = None
         self._init_rect()
 
     @abstractmethod
@@ -22,23 +22,25 @@ class GameObject(ABC, pygame.sprite.Sprite):
         pass
 
     def play_sound(self):
-        if self.sound:
-            self.sound.play()
+        if self._sound:
+            self._sound.play()
 
     def _init_rect(self):
-        match self.direction:
+        match self._direction:
             case GameObjectMovement.DOWN:
-                self.rect = self.image.get_rect(center=(random.randint(self.width_and_height, SCREEN_WIDTH - self.width_and_height), -50))
+                self.rect = self.image.get_rect(center=(random.randint(self._width_and_height, SCREEN_WIDTH - self._width_and_height), -50))
             case GameObjectMovement.LEFT:
                 self.rect = self.image.get_rect(
-                    center=(SCREEN_WIDTH + 50, random.randint(self.width_and_height, SCREEN_HEIGHT - self.width_and_height))
+                    center=(SCREEN_WIDTH + 50, random.randint(self._width_and_height, SCREEN_HEIGHT - self._width_and_height))
                 )
             case GameObjectMovement.UP:
                 self.rect = self.image.get_rect(
-                    center=(random.randint(self.width_and_height, SCREEN_WIDTH - self.width_and_height), SCREEN_HEIGHT + 50)
+                    center=(random.randint(self._width_and_height, SCREEN_WIDTH - self._width_and_height), SCREEN_HEIGHT + 50)
                 )
             case GameObjectMovement.RIGHT:
-                self.rect = self.image.get_rect(center=(-50, random.randint(self.width_and_height, SCREEN_HEIGHT - self.width_and_height)))
+                self.rect = self.image.get_rect(
+                    center=(-50, random.randint(self._width_and_height, SCREEN_HEIGHT - self._width_and_height))
+                )
 
 
 class GameObjectMovement(Enum):

@@ -8,22 +8,14 @@ class Hand(pygame.sprite.Sprite):
         super().__init__()
         image = pygame.image.load(HAND_IMAGE).convert_alpha()
         self.image = pygame.transform.scale(image, (HAND_SIZE, HAND_SIZE))
+        self._media_pipe = CV2_MediaPipe()
         self.rect = self.image.get_rect(center=(SCREEN_HEIGHT // 2, SCREEN_WIDTH // 2))
-        self.media_pipe = CV2_MediaPipe()
-        self.hand_coordinate_generator = self.media_pipe.get_hand_coordinate()
-
-    def create_hand_coordinate_generator(self):
-        """Létrehoz egy új hand_coordinate_generator-t."""
-        self.hand_coordinate_generator = self.media_pipe.get_hand_coordinate()
 
     def update(self):
         """CV2 coordinate gives to the pygame rect x y"""
-        try:
-            coordinates = next(self.hand_coordinate_generator)
-            if coordinates is not None:
-                self.rect.center = coordinates
-        except StopIteration:
-            self.create_hand_coordinate_generator()
+        coordinates = self._media_pipe.get_hand_coordinate()
+        if coordinates is not None:
+            self.rect.center = coordinates
 
     def is_closed(self):
-        return self.media_pipe.is_closed()
+        return self._media_pipe.is_closed()
