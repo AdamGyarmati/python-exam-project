@@ -61,4 +61,7 @@ Amikor az idő lejár:
 python game.py
 ```
 
+### GitHub
+[python-exam-project](https://github.com/AdamGyarmati/python-exam-project)
+
 **Jó szórakozást, és csapj le minél több szúnyogot anélkül, hogy túl sok méhecskét bántanál!**
