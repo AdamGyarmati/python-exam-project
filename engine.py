@@ -10,10 +10,10 @@ from utils.utils import FILE_TO_WRITE
 class Engine:
     def __init__(self, gameboard: GameBoard):
         self._gameboard = gameboard
-        self._last_spawn_mosquito_time = pygame.time.get_ticks()
-        self._last_spawn_bee_time = pygame.time.get_ticks()
-        self._last_spawn_stinky_bug_time = pygame.time.get_ticks()
-        self._start_ticks = pygame.time.get_ticks()
+        # self._last_spawn_mosquito_time = pygame.time.get_ticks()
+        # self._last_spawn_bee_time = pygame.time.get_ticks()
+        # self._last_spawn_stinky_bug_time = pygame.time.get_ticks()
+        # self._start_ticks = pygame.time.get_ticks()
         self._write_json = WriteJsonData(FILE_TO_WRITE)
 
     def start_game(self):
@@ -40,6 +40,7 @@ class Engine:
                 break
 
     def run_mouse(self):
+        self.init_timing()
         while self._gameboard.is_running:
             for event in pygame.event.get():
                 match event.type:
@@ -55,6 +56,7 @@ class Engine:
                 self.wait_for_quit()
 
     def run_hand(self):
+        self.init_timing()
         while self._gameboard.is_running:
             for event in pygame.event.get():
                 match event.type:
@@ -97,6 +99,12 @@ class Engine:
 
         # Sprite megjelenítés
         self._gameboard.display_sprites()
+
+    def init_timing(self):
+        self._start_ticks = pygame.time.get_ticks()
+        self._last_spawn_mosquito_time = pygame.time.get_ticks()
+        self._last_spawn_bee_time = pygame.time.get_ticks()
+        self._last_spawn_stinky_bug_time = pygame.time.get_ticks()
 
     def generate_game_objects(self, current_time, last_spawn_mosquito_time, last_spawn_bee_time, last_spawn_stinky_bug_time):
         if current_time - last_spawn_mosquito_time > 800:  # 800 ms = 0.8 másodperc
