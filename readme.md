@@ -7,8 +7,10 @@
 A játék futtatásához az alábbi Python csomagokat kell telepíteni:
 
 ```bash
+python.exe -m pip install --upgrade pip
 pip install pygame
 pip install mediapipe
+pip install opencv-python
 ```
 
 ## Játékmenet összefoglaló
@@ -45,6 +47,7 @@ A **Mosquito Splasher** lehetőséget ad kétféle vezérlési módra:
   </br>
 <img src="Assets/hand.png" alt="Mosquito Splasher Játékképernyő" width="110" />
   - **Lecsapás**: Mozgasd a kezed a játékobjektum fölé, majd ökölbe szorítással aktiváld a lecsapást (MediaPipe kézmozdulat-követés segítségével).
+  - **Lagg**: A kéz módban a játék laggol, nem tudtam rájönni az okára, a képfeldolgozással lesz valami probléma.
 
 ### Játék vége és pontszám mentése
 

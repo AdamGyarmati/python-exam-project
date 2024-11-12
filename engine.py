@@ -10,10 +10,6 @@ from utils.utils import FILE_TO_WRITE
 class Engine:
     def __init__(self, gameboard: GameBoard):
         self._gameboard = gameboard
-        # self._last_spawn_mosquito_time = pygame.time.get_ticks()
-        # self._last_spawn_bee_time = pygame.time.get_ticks()
-        # self._last_spawn_stinky_bug_time = pygame.time.get_ticks()
-        # self._start_ticks = pygame.time.get_ticks()
         self._write_json = WriteJsonData(FILE_TO_WRITE)
 
     def start_game(self):
