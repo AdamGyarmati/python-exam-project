@@ -56,4 +56,9 @@ Amikor az idő lejár:
 - Megjelenik a **Game Over** képernyő, amely kiírja az aktuális pontszámodat.
 - A pontszám és a pontos időbélyeg (*timestamp*) JSON formátumban mentésre kerül az `own_io` mappában található fájlba.
 
+### Játék indítás
+```bash
+python game.py
+```
+
 **Jó szórakozást, és csapj le minél több szúnyogot anélkül, hogy túl sok méhecskét bántanál!**
