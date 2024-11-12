@@ -3,6 +3,8 @@ from board.game_board import GameBoard
 from game_objects.mosquito import Mosquito
 from game_objects.bee import Bee
 from game_objects.stinky_bug import StinkyBug
+from own_io.save_score import WriteJsonData
+from utils.utils import FILE_TO_WRITE
 
 
 class Engine:
@@ -12,6 +14,7 @@ class Engine:
         self._last_spawn_bee_time = pygame.time.get_ticks()
         self._last_spawn_stinky_bug_time = pygame.time.get_ticks()
         self._start_ticks = pygame.time.get_ticks()
+        self._write_json = WriteJsonData(FILE_TO_WRITE)
 
     def start_game(self):
         mouse_game = False
@@ -113,6 +116,7 @@ class Engine:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
+                    self._write_json.write_score(self._gameboard.score_board.score)
                     break
             else:
                 continue
